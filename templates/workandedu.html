@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+<!-- Resume/Bio Page Content : 
+		Main: [
+			[ Short-Biography; Skills; ]
+			[ Work; Education; ]] 
+		Side:
+			[ Project; Related Skills; Related Posts; ]
+ -->
+{% block workandedu %}
+	<article id="main-article" class='work-edu article-container'>
+
+		{% block aboutme %}
+        <div class='post bio'>
+            <h3><a class='side-url' href={{bio.resume}}>{{bio.title}}</a></h3>
+            <br><p class='post-content'>{{bio.blurb}}</p>
+        </div>
+		{% endblock %}
+
+		<div class="work">
+			{% for job in jobs %}
+			<div class='post'>
+				<p>{{job.employer}}</p>
+				<p>{{job.location}}</p>
+				<p class='post-content'>{{job.title}}
+				{{job.description}} from {{job.dates}}.
+				</p>
+				<br>
+			</div>
+			{% endfor %}
+		</div>
+
+		<div class="edu">
+			{% for ed in education %}
+			<div class='post'>
+				<h3>{{ed.school}}</h3>
+				<p class='post-content'>
+				{{ed.location}}
+				{{ed.studied}}
+				{{ed.description}} from {{ed.dates}}.
+				</p>
+				<br>
+			</div>
+			{% endfor %}
+		</div>
+
+	</article>
+{% endblock %}
+
+{% block projects %}
+    <article id="side-article" class='projects article-container'>
+    	{% block skills %}
+        <div class='post skills'>
+			{% for skills in skills %}
+            <p class='skills'>{{skill}}</p>
+			{% endfor %}
+		</div>
+		{% endblock %}
+		
+        {% for project in projects %}
+        <div class='project'>
+            <h3><a href={{project.url}}>{{project.title}}</a></h3><br>
+            <p class='side-url'><a href={{project.url}}>{{project.url}}</a>
+            <br>{{project.blurb}}</p>
+        </div>
+        {% endfor %}
+    </article>
+{% endblock %}
+

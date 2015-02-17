@@ -1,0 +1,18 @@
+{% extends "post.html" %}
+<!-- Single Blog Page Content : 
+        Main: Single Blog Post: 
+            Post Subject; Project Title; Blurb; Skills;
+        Side: Small List of all post titles;
+ -->
+{% block content %}
+    <article id="main-article" class='blog article-container'>
+        <div class='post'>
+            <h3>{{post.subject}}</h3>
+            <p class='post-content'>
+            {{post.content | safe}}
+            <i class='date'>
+            Posted {{post.created.strftime("%b %d, %Y")}} by
+            </i> {{post.createdby}} </p><br>
+        </div>
+    </article>
+{% endblock %}

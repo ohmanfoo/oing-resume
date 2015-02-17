@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+<!-- Main Page Content : 
+        Main: List of all Projects: 
+            Project Title; Blurb; Skills Used; Related Posts;
+        Side: Small List; all; Post Title; Related Project Title;
+ -->
+{% block content %}
+
+    {% block projects %}
+        <article id="main-article" class='projects article-container'>
+            {% for project in projects %}
+            <div class='project'>
+                <h3><a href={{project.url}}>{{project.title}}</a></h3><br>
+                <p class='side-url'><a href={{project.url}}>{{project.url}}</a>
+                <br>{{project.blurb}}</p>
+            </div>
+            {% endfor %}
+        </article>
+    {% endblock %}
+
+    {% block blog %}
+        <article id="side-article" class='blog article-container'>
+            {% for post in posts %}
+            <div class='post'>
+                <h3>{{post.subject}}</h3>
+                <p class='post-content'>{{post.content}}
+                <i class='date'>Posted 
+                {{post.created.strftime("%b %d, %Y")}} by: </i>
+                {{post.createdby}}</p><br>
+            </div>
+            {% endfor %}
+        </article>
+    {% endblock %}
+
+{% endblock %}

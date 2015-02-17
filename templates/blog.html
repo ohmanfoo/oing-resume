@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+<!-- Blog Page Content : 
+        Main: Expanded List of all Posts ordered by date: 
+            Post Subject; Project Title; Blurb; Skills;
+        Side: Small List of all post titles;
+ -->
+{% block blog %}
+    <article id="main-article" class='blog article-container'>
+	{% for post in posts %}
+        <div class='post'>
+            <h3>{{post.subject}}</h3>
+            <p class='post-content'>{{post.content}}
+            <i class='date'>Posted 
+            {{post.created.strftime("%b %d, %Y")}} by: </i>
+            {{post.createdby}}</p><br>
+        </div>          	
+	{% endfor %}
+    </article>
+
+{% endblock %}
+
+{% block aboutme %}
+    <article id="side-article" class='aboutme article-container'>
+        <div class='post bio'>
+            <h3><a class='side-url' href={{bio.resume}}>{{bio.title}}</a></h3>
+            <br><p class='post-content'>{{bio.blurb}}</p>
+        </div>
+    </article>
+{% endblock %}
