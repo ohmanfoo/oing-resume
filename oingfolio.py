@@ -7,15 +7,12 @@ from lib.vartools import *
 from google.appengine.api import urlfetch
 from google.appengine.ext import db
 from models.models import *
-
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                                autoescape = True)
-
 def render_str(template, **params):
     t = jinja_env.get_template(template)
     return t.render(params)
-
 from views.views import *
 
 class FolioHandler(webapp2.RequestHandler):
@@ -49,8 +46,10 @@ class FolioHandler(webapp2.RequestHandler):
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
-
-
+        if self.request.url.endswith('.json'):
+            self.format = 'json'
+        else:
+            self.format = 'html'
 
 class Login(FolioHandler):
     def get(self):
@@ -58,15 +57,13 @@ class Login(FolioHandler):
             self.render('/admin/login-form.html')
         else:
             self.redirect('/')
-
     def post(self):
         username = self.request.get('username')
         password = self.request.get('password')
-
         u = User.login(username, password)
         if u:
             self.login(u)
-            self.redirect('/admin/newpost')
+            self.redirect('/admin/editing')
         else:
             msg = 'Invalid login'
             self.render('admin/login-form.html', error = msg)
@@ -86,43 +83,35 @@ class Signup(FolioHandler):
                 self.redirect('/')
         except IndexError:
             self.render('/signup-form.html')
-
     def post(self):
         have_error = False
         self.username = self.request.get('username')
         self.password = self.request.get('password')
         self.verify = self.request.get('verify')
         self.email = self.request.get('email')
-
         params = dict(username = self.username,
                       email = self.email)
-
         if not valid_username(self.username):
             params['error_username'] = "That's not a valid username."
             have_error = True
-
         if not valid_password(self.password):
             params['error_password'] = "That wasn't a valid password."
             have_error = True
         elif self.password != self.verify:
             params['error_verify'] = "Your passwords didn't match."
             have_error = True
-
         if not valid_email(self.email):
             params['error_email'] = "That's not a valid email."
             have_error = True
-
         if have_error:
             self.render('signup-form.html', **params)
         else:
             self.done()
-
     def done(self, *a, **kw):
         raise NotImplementedError
 
 class Register(Signup):
     def done(self):
-        #make sure the user doesn't already exist
         u = User.by_name(self.username)
         if u:
             msg = 'That user already exists.'
@@ -130,29 +119,66 @@ class Register(Signup):
         else:
             u = User.register(self.username, self.password, self.email)
             u.put()
-
             self.login(u)
             self.redirect('/')
 
+class ProjectPage(FolioHandler):
+    def get(self, proj_id):
+        key = db.Key.from_path('Proj', int(proj_id), parent = proj_key())
+        proj = db.get(key)
+        if not proj:
+            self.error(404)
+            return
+        if self.format == 'html':
+            self.render('permalink.html', post = proj)
+        else:
+            return self.render_json(proj.as_dict())
+
+class ProjectsFront(FolioHandler):
+    def get(self):
+        projects = Project.all()
+        if self.format == 'html':
+            self.render('projects.html', projects = projects)
+        else:
+            return self.render_json([i.as_dict() for i in projects])
+
+class AboutMeFront(FolioHandler):
+    def get(self):
+        bio = Bio.all().order('-created')[0]
+        skills = Skills.all()
+        contact = contact.all()
+        if self.format == 'html':            
+            self.render('aboutme.html', bio = bio,
+                                        skills = skills,
+                                        contact = contact)
+        else:
+            json = [i.as_dict() for i in skills]
+            json += [i.as_dict for i in bio]
+            json += [i.as_dict() for i in contact]
+            return self.render_json(json)
+
 class MainPage(FolioHandler):
     def get(self):
-        posts = Post.all().order('-created')
+        bio = Bio.all()
         projects = Project.all()
-        top4 = posts[0:4]
-        posts = top4
+        skills = Skill.all()
         self.response.headers['Content-Type'] = 'text/html'
-        self.render("content.html", posts = posts, projects = projects)
+        self.render("content.html", bio = bio,
+                                    projects = projects,
+                                    skills = skills)
 
 application = webapp2.WSGIApplication([('/', MainPage),
-                               ('/blog/?', BlogFront),
-                               ('/blog/([0-9]+)', PostPage),                              
-                               ('/resume-bio', ResumePage),
-                               ('/admin/newpost', NewPost),
-                               ('/admin/newproject', NewProject),
-                               ('/projects', ProjFront),
-                               ('/signup-form', Register),
-                               ('/admin/login-form', Login),
-                               ('/logout', Logout),
-                               #('/admin/register', RegisterInvite),
-                               ],
-                              debug=True)
+                # ('/api/contact/?(?:.json)?', ContactAPI),
+                # ('/api/bio/?(?:.json)?', BioAPI),
+                # ('/api/skills/?(?:.json)?', SkillsAPI),
+                # ('/api/projects/(?:.json)?', ProjectsAPI),
+                ('/admin/login-form', Login),
+                ('/admin/editing', EditPortfolio),
+                ('/admin/newproject', NewProject),
+                ('/aboutme', AboutMeFront),
+                ('/projects', ProjectsFront),
+                ('/project/([0-9]+)', ProjectPage),
+                ('/signup-form', Register),
+                ('/logout', Logout),
+                ],
+                debug=True)

@@ -13,7 +13,6 @@ def project_key(project = 'default'):
     return db.Key.from_path('projects', project)
 
 class User(db.Model):
-
     name = db.StringProperty(required = True)
     pw_hash = db.StringProperty(required = True)
     email = db.StringProperty(required = True)
@@ -39,56 +38,61 @@ class User(db.Model):
             return u
 
 class Project(db.Model):
-
     url = db.StringProperty(required = True)
+    #img = 
     title = db.StringProperty(required = True)
     blurb = db.StringProperty(multiline = True)
-    def render(self):
-        return render("project.html", app = self)
-
-class Post(db.Model):
-
-    subject = db.StringProperty(required = True)
-    content = db.TextProperty(required = True)
-    created = db.DateTimeProperty(auto_now_add = True)
+    description = db.TextProperty()
     last_modified = db.DateTimeProperty(auto_now = True)
-    createdby = db.StringProperty()
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
-        return render_str("post.html", p = self)
+        return render("project.html", app = self)
+    def as_dict(self):
+        time_fmt = '%c'
+        d = {'title': self.title,
+             'url': self.url,
+             'description': self.description,
+             'blurb': self.blurb,
+             'last_modified': self.last_modified}
+        return d
 
 class Bio(db.Model):
-
+    fname = db.StringProperty(required = True)
+    lname = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
     last_modified = db.DateTimeProperty(auto_now = True)
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
+    def as_dict(self):
+        time_fmt = '%c'
+        d={ 'fullname' : self.fullname,
+            'blurb': self.blurb,
+            'last_modified': self.last_modified}
+        return d
 
 class Skill(db.Model):
-    name = db.StringProperty(required = True)
-    created = db.DateTimeProperty(auto_now_add = True)
+    skill = db.StringProperty(required = True)
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
+    def as_dict(self):
+        time_fmt = '%c'
+        d = {'skill': self.skill}
+        return d
 
-class Job(db.Model):
-
-    employer = db.StringProperty(required = True)
-    location = db.TextProperty(required = True)
-    title = db.DateTimeProperty(auto_now_add = True)
-    dates = db.DateTimeProperty(auto_now = True)
-    description = db.StringProperty()
+class Contact(db.Model):
+    email = db.StringProperty(required = True)
+    twitter = db.StringProperty(required = True)
+    linkedin = db.StringProperty(required = True)
+    github = db.StringProperty(required = True)    
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
-
-class Edu(db.Model):
-
-    school = db.StringProperty(required = True)
-    location = db.TextProperty(required = True)
-    dates = db.DateTimeProperty(auto_now_add = True)
-    studied = db.StringProperty(required = True)
-    def render(self):
-        self._render_text = self.content.replace('\n', '<br>')
-        return render_str("post.html", p = self)
+    def as_dict(self):
+        time_fmt = '%c'
+        d = {'email': self.email,
+             'twitter': self.twitter,
+             'linkedin': self.linkedin,
+             'github': self.github}
+        return d

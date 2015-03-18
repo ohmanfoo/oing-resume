@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>new project</h2>
-
+<article id="main-article" class='posts article-container'>
+  <div class='project'>
+    <h2 class='post-content'>new project</h2>
     <form method="post">
       <label>
         <div>url</div>
@@ -23,4 +24,7 @@
 
       <input type="submit">
     </form>
+  </div>
+</article>
 {% endblock %}
+

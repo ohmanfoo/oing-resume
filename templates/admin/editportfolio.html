@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+<!-- Edit Page Content : 
+        Main: Area to Edit all Data: 
+            Project Title; Blurb; Skills Used; Related Posts;
+        Side: Drop List; all models;
+ -->
+{% block content %}
+    {% block admin_main %}
+    <article id="main-article" class='projects article-container'>
+    </article>
+    {% endblock %}
+    {% block admin_side %}
+    <article id="side-article" class='blog article-container'>
+    </article>
+    <!--templates-->
+    <script type='text/template' id='projectTemplate'>
+    //<div class='project'>
+        <a href=<%=projects.url}}><%=projects.title%></a>
+        <a href=<%=projects.url}}><%=projects.url%></a>
+        <p class='post-content'>
+            <%=projects.blurb%>
+            <%=projects.description%></p>
+        <p class='date'><%=projects.lastmodified%></p>
+    //</div>
+            <input class="edit" value="<%- title %>">
+    </script>
+    <script type='text/template' id='bioTemplate'>
+    //<div class='post bio'>
+        <h3>Bio</h3>
+        <p class='post-content'>
+            <%=bio.fullname%>
+            <%=bio.blurb%>
+            <%=bio.last_modified%>
+        </p><br>
+    //</div>
+            <input class="edit" value="<%- title %>">
+    </script>
+    <script type='text/template' id='contactTemplate'>
+    //<div class='post contact'>
+        <h3>Contact</h3>
+        <p class='post-content'>
+            <%=contact.email%>              
+            <%=contact.github%>
+            <%=contact.twitter%>
+            <%=contact.linkedin%>
+        </p><br>
+    //</div>
+            <input class="edit" value="<%- title %>">
+    </script>
+    <script type='text/template' id='skillsTemplate'>
+    //<ul class='post skills'>
+        <h3>Skills</h3>
+            <p><%=skill.name}}</p>
+            <input class="edit" value="<%- title %>">
+    </script>
+    <!--includes-->
+    <script type='text/javascript' src='/static/js/filmofile.js'></script>
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script type='text/javascript' src='/static/js/admin/lib/underscore-min.js'></script>
+    <script type='text/javascript' src='/static/js/admin/lib/backbone-min.js'></script>
+    <script type='text/javascript' src='/static/js/admin/models/project.js'></script>
+    <script type='text/javascript' src='/static/js/admin/collections/projects.js'></script>
+    <script type='text/javascript' src='/static/js/admin/views/project.js'></script>
+    <script type='text/javascript' src='/static/js/admin/views/projects.js'></script>
+    <script type='text/javascript' src='/static/js/admin/admin.js'></script>
+    {% endblock %}
+
+{% endblock %}
